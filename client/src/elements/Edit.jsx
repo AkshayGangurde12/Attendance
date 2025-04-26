@@ -1,98 +1,104 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 function Edit() {
-  const [data, setData] = useState([]);
-  const { id } = useParams();
-  useEffect(() => {
-    axios
-      .get(`/get_student/${id}`)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, [id]);
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [age, setAge] = useState('')
+    const [gender, setGender] = useState('')
+    const navigate = useNavigate()
+    const { id } = useParams()
 
-  const navigate = useNavigate();
+    useEffect(() => {
+        axios.get(`http://localhost:5001/student/${id}`)
+            .then(res => {
+                setName(res.data.NAME)
+                setEmail(res.data.EMAIL)
+                setAge(res.data.AGE)
+                setGender(res.data.GENDER)
+            })
+            .catch(err => console.log(err))
+    }, [id])
 
-  function handleSubmit(e) {
-    e.preventDefault();
+    function handleSubmit(e) {
+        e.preventDefault()
+        axios.put(`http://localhost:5001/student/${id}`, {
+            name,
+            email,
+            age: parseInt(age),
+            gender
+        })
+            .then(res => {
+                console.log(res)
+                navigate('/')
+            })
+            .catch(err => console.log(err))
+    }
 
-    axios
-      .post(`/edit_user/${id}`, data[0])
-      .then((res) => {
-        navigate("/");
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
-  }
-
-  return (
-    <div className="container-fluid vw-100 vh-100 bg-primary">
-      <h1>User {id}</h1>
-      <Link to="/" className="btn btn-success">
-        Back
-      </Link>
-      {data.map((student) => {
-        return (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group my-3">
-              <label htmlFor="name">Name</label>
-              <input
-                value={student.name}
-                type="text"
-                name="name"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], name: e.target.value }])
-                }
-              />
+    return (
+        <div className='container-fluid bg-primary vh-100 vw-100'>
+            <div className='row'>
+                <div className='col-md-6 offset-md-3'>
+                    <h3>Edit Student</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className='mb-3'>
+                            <label htmlFor='name' className='form-label'>Name</label>
+                            <input
+                                type='text'
+                                className='form-control'
+                                id='name'
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                minLength={2}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='email' className='form-label'>Email</label>
+                            <input
+                                type='email'
+                                className='form-control'
+                                id='email'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='age' className='form-label'>Age</label>
+                            <input
+                                type='number'
+                                className='form-control'
+                                id='age'
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                                required
+                                min={1}
+                                max={150}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='gender' className='form-label'>Gender</label>
+                            <select
+                                className='form-control'
+                                id='gender'
+                                value={gender}
+                                onChange={(e) => setGender(e.target.value)}
+                                required
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                        <button type='submit' className='btn btn-success'>Update</button>
+                    </form>
+                </div>
             </div>
-            <div className="form-group my-3">
-              <label htmlFor="email">Email</label>
-              <input
-                value={student.email}
-                type="email"
-                name="email"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], email: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="gender">Gender</label>
-              <input
-                value={student.gender}
-                type="text"
-                name="gender"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], gender: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="age">Age</label>
-              <input
-                value={student.age}
-                type="number"
-                name="age"
-                required
-                onChange={(e) => setData([{ ...data[0], age: e.target.value }])}
-              />
-            </div>
-            <div className="form-group my-3">
-              <button type="submit" className="btn btn-success">
-                Save
-              </button>
-            </div>
-          </form>
-        );
-      })}
-    </div>
-  );
+        </div>
+    )
 }
 
-export default Edit;
+export default Edit

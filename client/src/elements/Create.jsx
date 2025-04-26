@@ -1,59 +1,92 @@
-import React, { useState } from 'react'
 import axios from 'axios'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Create() {
-    const [values, setValues] = useState({
-        name: '',
-        email: '',
-        age: '',
-        gender: ''
-    })
-
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [age, setAge] = useState('')
+    const [gender, setGender] = useState('')
     const navigate = useNavigate()
 
-    function handleSubmit(e){
+    function handleSubmit(e) {
         e.preventDefault()
-
-        axios.post('/add_user', values)
-        .then((res)=>{
-            
-            navigate('/')
-            console.log(res)
+        axios.post('http://localhost:5001/add_student', {
+            name,
+            email,
+            age: parseInt(age),
+            gender
         })
-        .catch((err)=>console.log(err))
+            .then(res => {
+                console.log(res)
+                navigate('/')
+            })
+            .catch(err => console.log(err))
     }
-  return (
-    <div className='container vh-100 vw-100 bg-primary'>
-        <div className='row'>
-            <h3>Add Student</h3>
-            <div className='d-flex justify-content-end'>
-                <Link to='/' class='btn btn-success'>Home</Link>
+
+    return (
+        <div className='container-fluid bg-primary vh-100 vw-100'>
+            <div className='row'>
+                <div className='col-md-6 offset-md-3'>
+                    <h3>Add Student</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className='mb-3'>
+                            <label htmlFor='name' className='form-label'>Name</label>
+                            <input
+                                type='text'
+                                className='form-control'
+                                id='name'
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                minLength={2}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='email' className='form-label'>Email</label>
+                            <input
+                                type='email'
+                                className='form-control'
+                                id='email'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='age' className='form-label'>Age</label>
+                            <input
+                                type='number'
+                                className='form-control'
+                                id='age'
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                                required
+                                min={1}
+                                max={150}
+                            />
+                        </div>
+                        <div className='mb-3'>
+                            <label htmlFor='gender' className='form-label'>Gender</label>
+                            <select
+                                className='form-control'
+                                id='gender'
+                                value={gender}
+                                onChange={(e) => setGender(e.target.value)}
+                                required
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                        <button type='submit' className='btn btn-success'>Submit</button>
+                    </form>
+                </div>
             </div>
-            <form onSubmit={handleSubmit}>
-                <div className='form-group my-3'>
-                    <label htmlFor='name'>Name</label>
-                    <input type='text' name='name' required onChange={(e)=> setValues({...values, name: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='email'>Email</label>
-                    <input type='email' name='email' required onChange={(e)=> setValues({...values, email: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='gender'>Gender</label>
-                    <input type='text' name='gender' required onChange={(e)=> setValues({...values, gender: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='age'>Age</label>
-                    <input type='number' name='age' required onChange={(e)=> setValues({...values, age: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <button type='submit' className='btn btn-success'>Save</button>
-                </div>
-            </form>
         </div>
-    </div>
-  )
+    )
 }
 
 export default Create

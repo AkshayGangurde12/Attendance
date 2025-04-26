@@ -8,8 +8,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(express.json());
 
-// Change port to 5001 since 5000 is in use
-const port = 5001;
+const port = 5000;
 
 // Database connection string
 const connectionString = "DATABASE=STUDENTS;HOSTNAME=localhost;UID=AKSHAY;PWD=12345;PORT=25000;PROTOCOL=TCPIP";
@@ -95,9 +94,9 @@ async function initializeDatabase() {
 // Initialize database when server starts
 initializeDatabase();
 
-// CRUD Operations
+// API Routes
 
-// Create - Add new student
+// Add student
 app.post("/add_student", async (req, res) => {
     let connection;
     try {
@@ -138,13 +137,13 @@ app.post("/add_student", async (req, res) => {
     }
 });
 
-// Read - Get all students
+// Get all students
 app.get("/students", async (req, res) => {
     let connection;
     try {
         connection = await ibmdb.open(connectionString);
         const result = await connection.query("SELECT * FROM STUDENT_DETAILS");
-      res.json(result);
+        res.json(result);
     } catch (err) {
         console.error("Error fetching students:", err);
         res.status(500).json({ error: "Failed to fetch students" });
@@ -155,7 +154,7 @@ app.get("/students", async (req, res) => {
     }
 });
 
-// Read - Get single student
+// Get single student
 app.get("/student/:id", async (req, res) => {
     let connection;
     try {
@@ -176,7 +175,7 @@ app.get("/student/:id", async (req, res) => {
     }
 });
 
-// Update - Update student
+// Update student
 app.put("/student/:id", async (req, res) => {
     let connection;
     try {
@@ -214,7 +213,7 @@ app.put("/student/:id", async (req, res) => {
     }
 });
 
-// Delete - Delete student
+// Delete student
 app.delete("/student/:id", async (req, res) => {
     let connection;
     try {
@@ -233,4 +232,4 @@ app.delete("/student/:id", async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
-});
+}); 
